@@ -15,8 +15,7 @@ defmodule Bamboo.Phoenix do
         def text_and_html_email_with_layout do
           new_email()
           # You could also only set a layout for just html, or just text
-          |> put_html_layout({MyApp.LayoutView, "email.html"})
-          |> put_text_layout({MyApp.LayoutView, "email.text"})
+          |> put_layout({MyApp.LayoutView, :email})
           # Pass an atom to render html AND plain text templates
           |> render(:text_and_html_email)
         end
@@ -98,7 +97,6 @@ defmodule Bamboo.Phoenix do
     raise "function implemented for documentation only, please call: use Bamboo.Phoenix"
   end
 
-
   @doc """
   Sets the layout when rendering HTML templates
   """
@@ -111,6 +109,15 @@ defmodule Bamboo.Phoenix do
   """
   def put_text_layout(email, layout) do
     email |> put_private(:text_layout, layout)
+  end
+
+  @doc """
+  Sets the layout for rendering plain text and HTML templates
+  """
+  def put_layout(email, {layout, template}) do
+    email
+    |> Bamboo.Phoenix.put_text_layout({layout, to_string(template) <> ".text"})
+    |> Bamboo.Phoenix.put_html_layout({layout, to_string(template) <> ".html"})
   end
 
   @doc """
